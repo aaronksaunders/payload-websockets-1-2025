@@ -6,6 +6,8 @@ import { fileURLToPath } from 'url'
 
 import config from '@/payload.config'
 import './styles.css'
+import Link from 'next/link'
+import { Media } from '@/payload-types'
 
 export default async function HomePage() {
   const headers = await getHeaders()
@@ -15,44 +17,61 @@ export default async function HomePage() {
 
   const fileURL = `vscode://file/${fileURLToPath(import.meta.url)}`
 
+  const todos = await payload.find({
+    collection: 'todos',
+    limit: 100,
+  })
+
   return (
-    <div className="home">
-      <div className="content">
-        <picture>
-          <source srcSet="https://raw.githubusercontent.com/payloadcms/payload/main/packages/ui/src/assets/payload-favicon.svg" />
-          <Image
-            alt="Payload Logo"
-            height={65}
-            src="https://raw.githubusercontent.com/payloadcms/payload/main/packages/ui/src/assets/payload-favicon.svg"
-            width={65}
-          />
-        </picture>
-        {!user && <h1>Welcome to your new project.</h1>}
-        {user && <h1>Welcome back, {user.email}</h1>}
-        <div className="links">
-          <a
-            className="admin"
-            href={payloadConfig.routes.admin}
-            rel="noopener noreferrer"
-            target="_blank"
+    <div style={{ display: 'flex', flexDirection: 'column', padding: 20 }}>
+      <h2>Payload To Do List {user?.email}</h2>
+      <div className="todos">
+        <Link href="/todo-create">
+          <button
+            style={{
+              border: '1px solid #ccc',
+              borderRadius: 10,
+              padding: 10,
+              marginBottom: 16,
+            }}
           >
-            Go to admin panel
-          </a>
-          <a
-            className="docs"
-            href="https://payloadcms.com/docs"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Documentation
-          </a>
-        </div>
-      </div>
-      <div className="footer">
-        <p>Update this page by editing</p>
-        <a className="codeLink" href={fileURL}>
-          <code>app/(frontend)/page.tsx</code>
-        </a>
+            Create Todo
+          </button>
+        </Link>
+        {todos.docs.map((todo) => (
+          <Link href={`/todos/${todo.id}`} key={todo.id} style={{ textDecoration: 'none' }}>
+            <div
+              style={{
+                display: 'flex',
+                border: '1px solid #ccc',
+                borderRadius: 10,
+                marginBottom: 16,
+              }}
+            >
+              {todo.media ? (
+                <div style={{ width: 100, height: 100, margin: 16, marginTop: 20 }}>
+                  <Image
+                    src={`${(todo.media as Media)?.url}`}
+                    alt={todo.title}
+                    width={100}
+                    height={100}
+                  />
+                </div>
+              ) : (
+                <div style={{ width: 100, height: 100, margin: 16, marginTop: 20 }}>
+                  <p>No media</p>
+                </div>
+              )}
+              <div style={{ paddingBottom: 16, paddingLeft: 16 }}>
+                <h2>{todo.title}</h2>
+                <p>{todo.description}</p>
+                <p>{todo.completed ? 'Completed' : 'Not Completed'}</p>
+                <p>{todo.createdAt}</p>
+                <p>{todo.updatedAt}</p>
+              </div>
+            </div>
+          </Link>
+        ))}
       </div>
     </div>
   )
