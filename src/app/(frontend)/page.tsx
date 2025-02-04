@@ -26,18 +26,30 @@ export default async function HomePage() {
     <div style={{ display: 'flex', flexDirection: 'column', padding: 20 }}>
       <h2>Payload To Do List {user?.email}</h2>
       <div className="todos">
-        <Link href="/todo-create">
-          <button
-            style={{
-              border: '1px solid #ccc',
-              borderRadius: 10,
-              padding: 10,
-              marginBottom: 16,
-            }}
-          >
-            Create Todo
-          </button>
-        </Link>
+        <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
+          <Link href="/todo-create">
+            <button
+              style={{
+                border: '1px solid #ccc',
+                borderRadius: 10,
+                padding: 10,
+              }}
+            >
+              Create Todo
+            </button>
+          </Link>
+          <Link href="/todo-live">
+            <button
+              style={{
+                border: '1px solid #ccc',
+                borderRadius: 10,
+                padding: 10,
+              }}
+            >
+              Live View
+            </button>
+          </Link>
+        </div>
         {todos.docs.map((todo) => (
           <Link href={`/todos/${todo.id}`} key={todo.id} style={{ textDecoration: 'none' }}>
             <div
